@@ -23,11 +23,48 @@ const CONFIG = {
   ],
 };
 
+/* ------------------------------------------------------------
+   Flor amarilla, dibujada a mano en SVG (sin <use>/<defs> para
+   que se vea igual en cualquier navegador). Dos variantes:
+   una flor completa de 5 pétalos con centro texturizado, y un
+   pétalo suelto para la lluvia de fondo.
+------------------------------------------------------------- */
+const FLOWER_INNER = (() => {
+  const petal = (angle) => `
+    <path transform="rotate(${angle} 32 32)" d="M32 32C23 27 22 9 32 3C42 9 41 27 32 32Z" fill="#FFC72C"/>
+    <path transform="rotate(${angle} 32 32)" d="M32 30C26 26 26 13 32 8C38 13 38 26 32 30Z" fill="#FFE18A" opacity=".7"/>`;
+  const petals = [0, 72, 144, 216, 288].map(petal).join("");
+  const seeds = [0, 51, 102, 154, 206, 257, 309]
+    .map((a) => {
+      const rad = (a * Math.PI) / 180;
+      const x = (32 + Math.cos(rad) * 4.4).toFixed(1);
+      const y = (32 + Math.sin(rad) * 4.4).toFixed(1);
+      return `<circle cx="${x}" cy="${y}" r="1" fill="#B85E12"/>`;
+    })
+    .join("");
+  return `${petals}<circle cx="32" cy="32" r="8.5" fill="#E8871E"/><circle cx="32" cy="32" r="8.5" fill="none" stroke="#C96A12" stroke-width=".6" opacity=".5"/>${seeds}`;
+})();
+
+const PETAL_INNER = `
+  <path d="M32 40C23 35 22 15 32 6C42 15 41 35 32 40Z" fill="#FFC72C"/>
+  <path d="M32 37C27 33 27 18 32 11C37 18 37 33 32 37Z" fill="#FFE18A" opacity=".6"/>
+  <path d="M32 9L32 35" stroke="#E8871E" stroke-width=".8" opacity=".4" stroke-linecap="round"/>`;
+
+function flowerSVG(size, variant) {
+  const inner = variant === "petal" ? PETAL_INNER : FLOWER_INNER;
+  const wh = size ? ` width="${size}" height="${size}"` : "";
+  return `<svg viewBox="0 0 64 64"${wh} aria-hidden="true">${inner}</svg>`;
+}
+
 document.addEventListener("DOMContentLoaded", () => {
   document.querySelectorAll('[data-editable]').forEach(el => {
     if (CONFIG.novia) el.textContent = CONFIG.novia;
   });
   document.getElementById("year").textContent = new Date().getFullYear();
+
+  document.querySelectorAll("[data-flower]").forEach((el) => {
+    el.innerHTML = FLOWER_INNER;
+  });
 
   initPetals();
   initScrollReveal();
@@ -40,12 +77,12 @@ document.addEventListener("DOMContentLoaded", () => {
 function initPetals() {
   const container = document.getElementById("petals");
   const count = window.innerWidth < 700 ? 14 : 24;
-  const flowerSVG = document.querySelector("#flor").outerHTML;
 
   for (let i = 0; i < count; i++) {
     const petal = document.createElement("div");
     petal.className = "petal";
-    petal.innerHTML = `<svg viewBox="0 0 64 64" width="${rand(10, 22)}" height="${rand(10, 22)}">${flowerSVG}</svg>`;
+    const variant = Math.random() < 0.6 ? "flower" : "petal";
+    petal.innerHTML = flowerSVG(Math.round(rand(12, 24)), variant);
 
     const left = rand(0, 100);
     const fallDuration = rand(9, 20);
@@ -106,7 +143,7 @@ function initCarousel() {
   let current = 0;
   let autoplayTimer = null;
 
-  const placeholderIcon = `<svg viewBox="0 0 64 64"><use href="#flor"></use></svg>`;
+  const placeholderIcon = flowerSVG(36, "flower");
 
   // Construye los slides
   photos.forEach((photo, i) => {
@@ -236,14 +273,14 @@ function initSurprise() {
 }
 
 function launchConfetti() {
-  const flowerSVG = document.querySelector("#flor").outerHTML;
   const count = 40;
 
   for (let i = 0; i < count; i++) {
     const piece = document.createElement("div");
     piece.className = "confetti-piece";
-    const size = rand(10, 24);
-    piece.innerHTML = `<svg viewBox="0 0 64 64" width="${size}" height="${size}">${flowerSVG}</svg>`;
+    const size = Math.round(rand(10, 24));
+    const variant = Math.random() < 0.7 ? "flower" : "petal";
+    piece.innerHTML = flowerSVG(size, variant);
 
     const left = rand(0, 100);
     const duration = rand(2.2, 4);

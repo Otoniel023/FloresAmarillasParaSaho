@@ -18,6 +18,28 @@
   --font-body: 'Poppins', sans-serif;
 }
 
+/* Paleta oscura: misma identidad amarilla, fondo cálido casi negro */
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --amarillo-suave: #5C4826;
+    --crema: #1B140D;
+    --crema-2: #221909;
+    --blanco: #2E2314;
+    --tinta: #F5E6C8;
+    --tinta-suave: #C7AE85;
+    --sombra: rgba(0, 0, 0, 0.5);
+  }
+}
+:root[data-theme="dark"]{
+  --amarillo-suave: #5C4826;
+  --crema: #1B140D;
+  --crema-2: #221909;
+  --blanco: #2E2314;
+  --tinta: #F5E6C8;
+  --tinta-suave: #C7AE85;
+  --sombra: rgba(0, 0, 0, 0.5);
+}
+
 *, *::before, *::after{ box-sizing: border-box; }
 
 html{ scroll-behavior: smooth; }
@@ -356,7 +378,7 @@ img{ max-width: 100%; display: block; }
   align-items: center;
   justify-content: center;
   gap: 10px;
-  color: rgba(74,58,29,0.55);
+  color: var(--tinta-suave);
   font-size: .82rem;
   text-align: center;
   padding: 20px;
