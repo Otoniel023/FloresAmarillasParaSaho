@@ -54,6 +54,38 @@ function flowerSVG(size, variant) {
   return `<svg viewBox="0 0 64 64"${wh} aria-hidden="true">${inner}</svg>`;
 }
 
+/* ------------------------------------------------------------
+   Flor grande "protagonista" del hero: 6 pétalos, más detalle,
+   y cada pétalo abre con su propia animación escalonada (efecto
+   de flor floreciendo) al cargar la página.
+------------------------------------------------------------- */
+const BIG_FLOWER_INNER = (() => {
+  const outer = "M50 50C38 44 36 16 50 6C64 16 62 44 50 50Z";
+  const inner = "M50 47C42 42 42 24 50 15C58 24 58 42 50 47Z";
+  const angles = [0, 60, 120, 180, 240, 300];
+  const petals = angles
+    .map(
+      (a, i) => `
+    <g transform="rotate(${a} 50 50)">
+      <g class="petal-scale" style="--i:${i}">
+        <path d="${outer}" fill="#FFC72C"/>
+        <path d="${inner}" fill="#FFE18A" opacity=".7"/>
+      </g>
+    </g>`
+    )
+    .join("");
+  const seedCount = 9;
+  const seeds = Array.from({ length: seedCount })
+    .map((_, i) => {
+      const rad = ((360 / seedCount) * i * Math.PI) / 180;
+      const x = (50 + Math.cos(rad) * 6.5).toFixed(1);
+      const y = (50 + Math.sin(rad) * 6.5).toFixed(1);
+      return `<circle cx="${x}" cy="${y}" r="1.6" fill="#B85E12"/>`;
+    })
+    .join("");
+  return `${petals}<g class="flower-core"><circle cx="50" cy="50" r="14" fill="#E8871E"/><circle cx="50" cy="50" r="14" fill="none" stroke="#C96A12" stroke-width="1" opacity=".5"/>${seeds}</g>`;
+})();
+
 document.addEventListener("DOMContentLoaded", () => {
   document.querySelectorAll('[data-editable]').forEach(el => {
     if (CONFIG.novia) el.textContent = CONFIG.novia;
@@ -62,6 +94,9 @@ document.addEventListener("DOMContentLoaded", () => {
 
   document.querySelectorAll("[data-flower]").forEach((el) => {
     el.innerHTML = FLOWER_INNER;
+  });
+  document.querySelectorAll("[data-flower-big]").forEach((el) => {
+    el.innerHTML = BIG_FLOWER_INNER;
   });
 
   initPetals();
