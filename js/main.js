@@ -15,11 +15,9 @@
 const CONFIG = {
   novia: "mi persona favorita",
   photos: [
-    { src: "", caption: "Nuestra primera foto juntos" },
-    { src: "", caption: "Ese viaje que no olvidamos" },
-    { src: "", caption: "Tu sonrisa favorita" },
-    { src: "", caption: "Un día cualquiera, perfecto" },
-    { src: "", caption: "Nosotros, siempre" },
+    { src: "fotos/1.jpg", caption: "Nosotros, de noche" },
+    { src: "fotos/2.jpg", caption: "Riendo de la nada" },
+    { src: "fotos/3.jpg", caption: "Flores para ti" },
   ],
 };
 
